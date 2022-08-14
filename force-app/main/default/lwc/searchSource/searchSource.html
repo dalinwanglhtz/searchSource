@@ -8,5 +8,12 @@
                 autocomplete="on">
             </lightning-input>
         </div>
+        <div>
+            <lightning-datatable
+                key-field="id"
+                data={data}
+                columns={columns}>
+            </lightning-datatable>
+        </div>
     </lightning-card>
 </template>
