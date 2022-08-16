@@ -10,9 +10,11 @@
         </div>
         <div>
             <lightning-datatable
+                hide-checkbox-column
                 key-field="id"
                 data={data}
-                columns={columns}>
+                columns={columns}
+                onrowaction={handleRowAction}>
             </lightning-datatable>
         </div>
     </lightning-card>
