@@ -70,6 +70,10 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
             });
     }
 
+    clearAutoSuggest() {
+        this.autoSuggestList = null;
+    }
+
     handleRowAction(event) {
         const action = event.detail.action;
         const row = event.detail.row;
