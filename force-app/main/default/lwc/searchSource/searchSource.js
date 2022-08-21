@@ -2,6 +2,7 @@ import { LightningElement } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getApexClass from '@salesforce/apex/SearchSourceController.getApexClass';
 import getPermission from '@salesforce/apex/SearchSourceController.getPermission';
+import getAutoSuggest from '@salesforce/apex/SearchSourceController.getAutoSuggest';
 
 const actions = [
     { label: 'Show Details', name: 'showDetails'}
@@ -25,6 +26,7 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
     columns = columns;
     profileData = [];
     profileColumns = profileColumns;
+    autoSuggestList = [];
     err;
 
     handleChange(event) {
@@ -34,21 +36,36 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
             return;
         }
 
-        getPermission({keyWord: word})
+        getAutoSuggest({searchKey: word})
             .then(result => {
-                console.log('Profiles: ', result);
-                this.profileData = result;
+                this.autoSuggestList = result;
             })
             .catch(error => {
-                console.log('Error: ', error);
                 this.err = error;
-            })
+            });
 
         getApexClass({searchKey: word})
             .then(result => {
                 this.data = result;
             })
             .catch(error => {
+                this.err = error;
+            });
+    }
+
+    setSelected(event) {
+        console.log('Selected: ', event.currentTarget.dataset.name);
+        const searchInput = this.template.querySelector('lightning-input');
+        searchInput.value = event.currentTarget.dataset.name;
+        this.autoSuggestList = [];
+
+        getPermission({keyWord: searchInput.value})
+            .then(result => {
+                console.log('Profiles: ', result);
+                this.profileData = result;
+            })
+            .catch(error => {
+                console.log('Error: ', error);
                 this.err = error;
             });
     }

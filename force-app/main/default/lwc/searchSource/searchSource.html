@@ -8,6 +8,19 @@
                 autocomplete="on">
             </lightning-input>
         </div>
+        <template if:true={autoSuggestList}>
+            <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox">
+                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                    <template for:each={autoSuggestList} for:item="item">
+                        <li role="presentation" class="slds-listbox__item" key={item}>
+                            <div data-id={item} data-name={item} onclick={setSelected} class="slds-listbox__option">
+                                <p>{item}</p>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+        </template>
         <div class="slds-m-left_small">
             <lightning-datatable
                 hide-checkbox-column

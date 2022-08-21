@@ -23,6 +23,24 @@ public class SearchSourceController {
     }
     
     @AuraEnabled
+    public static List<String> getAutoSuggest(String searchKey) {
+        String objectType ='Profile';
+        Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+        Schema.SObjectType profSchema = schemaMap.get(objectType);
+        Map<String, Schema.SObjectField> fieldMap = profSchema.getDescribe().fields.getMap();
+		List<String> autoSuggests = new List<String>();
+        
+        for(String fieldName : fieldMap.keySet()) {
+            String label = fieldMap.get(fieldName).getDescribe().getLabel();
+            if(label.contains(searchKey)) {
+                autoSuggests.add(label);
+            }
+        }
+
+        return autoSuggests;
+    }
+    
+    @AuraEnabled
     public static List<Profile> getPermission(String keyWord) {
         String searchKey = getFieldName(keyWord);
         System.debug('SearchKey: '+searchKey);
@@ -48,18 +66,13 @@ public class SearchSourceController {
     }
     
     private static String getFieldName(String keyWord) {
-        System.debug('KeyWord: '+keyWord);
         String objectType ='Profile';
         Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
         Schema.SObjectType profSchema = schemaMap.get(objectType);
         Map<String, Schema.SObjectField> fieldMap = profSchema.getDescribe().fields.getMap();
-        
-        System.debug('Permission: '+fieldMap.get('PermissionsMassInlineEdit').getDescribe().getName());
-        
         Map<String,String> fieldToAPIName = new Map<String,String>();
         
         for(String fieldName : fieldMap.keySet()) {
-            //System.debug('Field Mapping: '+fieldMap.get(fieldName).getDescribe().getLabel()+' API Name: '+fieldName);
             fieldToAPIName.put(fieldMap.get(fieldName).getDescribe().getLabel(), fieldMap.get(fieldName).getDescribe().getName());
         }
         
