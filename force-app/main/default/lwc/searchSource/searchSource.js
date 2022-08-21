@@ -26,7 +26,7 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
     columns = columns;
     profileData = [];
     profileColumns = profileColumns;
-    autoSuggestList = [];
+    autoSuggestList;
     err;
 
     handleChange(event) {
@@ -57,7 +57,7 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
         console.log('Selected: ', event.currentTarget.dataset.name);
         const searchInput = this.template.querySelector('lightning-input');
         searchInput.value = event.currentTarget.dataset.name;
-        this.autoSuggestList = [];
+        this.autoSuggestList = null;
 
         getPermission({keyWord: searchInput.value})
             .then(result => {
