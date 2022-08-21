@@ -1,12 +1,5 @@
 <template>
     <lightning-card title="Search Source">
-        <div slot="actions">
-            <lightning-button
-                variant="brand"
-                label="Clear AutoSuggest"
-                onclick={clearAutoSuggest}>
-            </lightning-button>
-        </div>
         <div class="slds-m-around_small">
             <lightning-input 
                 type="search" 
@@ -17,6 +10,13 @@
         </div>
         <template if:true={autoSuggestList}>
             <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox">
+                <div class="slds-m-right_small slds-float_right">
+                    <lightning-button
+                        variant="base"
+                        label="Clear"
+                        onclick={clearAutoSuggest}>
+                    </lightning-button>
+                </div>
                 <ul class="slds-listbox slds-listbox_vertical" role="presentation">
                     <template for:each={autoSuggestList} for:item="item">
                         <li role="presentation" class="slds-listbox__item" key={item}>
