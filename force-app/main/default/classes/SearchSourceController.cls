@@ -24,10 +24,7 @@ public class SearchSourceController {
     
     @AuraEnabled
     public static List<String> getAutoSuggest(String searchKey) {
-        String objectType ='Profile';
-        Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
-        Schema.SObjectType profSchema = schemaMap.get(objectType);
-        Map<String, Schema.SObjectField> fieldMap = profSchema.getDescribe().fields.getMap();
+        Map<String, Schema.SObjectField> fieldMap = getFieldMap('Profile');
 		List<String> autoSuggests = new List<String>();
         
         for(String fieldName : fieldMap.keySet()) {
@@ -66,10 +63,7 @@ public class SearchSourceController {
     }
     
     private static String getFieldName(String keyWord) {
-        String objectType ='Profile';
-        Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
-        Schema.SObjectType profSchema = schemaMap.get(objectType);
-        Map<String, Schema.SObjectField> fieldMap = profSchema.getDescribe().fields.getMap();
+        Map<String, Schema.SObjectField> fieldMap = getFieldMap('Profile');
         Map<String,String> fieldToAPIName = new Map<String,String>();
         
         for(String fieldName : fieldMap.keySet()) {
@@ -77,5 +71,11 @@ public class SearchSourceController {
         }
         
         return fieldToAPIName.get(keyWord);
+    }
+    
+    private static Map<String, Schema.SObjectField> getFieldMap(String objectType) {
+        Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+        Schema.SObjectType sObjSchema = schemaMap.get(objectType);
+    	return sObjSchema.getDescribe().fields.getMap();
     }
 }
