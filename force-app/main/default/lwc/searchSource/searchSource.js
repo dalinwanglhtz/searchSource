@@ -1,7 +1,7 @@
 import { LightningElement } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getApexClass from '@salesforce/apex/SearchSourceController.getApexClass';
-import getPermission from '@salesforce/apex/SearchSourceController.getPermission';
+import getProfiles from '@salesforce/apex/SearchSourceController.getProfiles';
 import getAutoSuggest from '@salesforce/apex/SearchSourceController.getAutoSuggest';
 
 const actions = [
@@ -22,9 +22,9 @@ const profileColumns = [
 ]
 
 export default class SearchSource extends NavigationMixin(LightningElement) {
-    data = [];
+    data;
     columns = columns;
-    profileData = [];
+    profileData;
     profileColumns = profileColumns;
     autoSuggestList;
     err;
@@ -32,7 +32,10 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
     handleChange(event) {
         const word = event.target.value;
         if(!word) {
-            this.data = [];
+            console.log('Word cleared');
+            this.data = null;
+            this.profileData = null;
+            this.autoSuggestList = null;
             return;
         }
 
@@ -59,7 +62,7 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
         searchInput.value = event.currentTarget.dataset.name;
         this.autoSuggestList = null;
 
-        getPermission({keyWord: searchInput.value})
+        getProfiles({keyWord: searchInput.value})
             .then(result => {
                 console.log('Profiles: ', result);
                 this.profileData = result;
@@ -82,6 +85,12 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
                 this.navigateToWebPage(row.Id);
                 break;
         }
+    }
+
+    handleClear() {
+        this.data = null;
+        this.profileData = null;
+        this.autoSuggestList = null;
     }
 
     navigateToWebPage(rowId) {

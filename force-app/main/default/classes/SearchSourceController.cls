@@ -38,19 +38,16 @@ public class SearchSourceController {
     }
     
     @AuraEnabled
-    public static List<Profile> getPermission(String keyWord) {
+    public static List<Profile> getProfiles(String keyWord) {
         String searchKey = getFieldName(keyWord);
-        System.debug('SearchKey: '+searchKey);
         List<Profile> profiles = [SELECT Id, Name FROM Profile];
         List<Profile> foundProfiles = new List<Profile>();
         for(Profile prof : profiles) {
             try {
             	String dbQuery = 'SELECT '+searchKey+' FROM Profile WHERE Name = \''+prof.Name+'\'';
-                System.debug('QUERY: '+dbQuery);
                 sObject one = Database.query(dbQuery);
                 Map<String, Object> fields = one.getPopulatedFieldsAsMap();
                 if(fields.get(searchKey) == true) {
-                    System.debug('Added');
                     foundProfiles.add(prof);
                 }
             } catch (Exception ex) {
@@ -74,8 +71,7 @@ public class SearchSourceController {
     }
     
     private static Map<String, Schema.SObjectField> getFieldMap(String objectType) {
-        Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
-        Schema.SObjectType sObjSchema = schemaMap.get(objectType);
+        Schema.SObjectType sObjSchema = Schema.getGlobalDescribe().get(objectType);
     	return sObjSchema.getDescribe().fields.getMap();
     }
 }

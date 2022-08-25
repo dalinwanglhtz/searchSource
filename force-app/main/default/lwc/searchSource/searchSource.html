@@ -1,5 +1,12 @@
 <template>
     <lightning-card title="Search Source">
+        <div slot="actions">
+            <lightning-button
+                label="Clear All"
+                variant="neutral"
+                onclick={handleClear}>
+            </lightning-button>
+        </div>
         <div class="slds-m-around_small">
             <lightning-input 
                 type="search" 
