@@ -61,13 +61,16 @@ public class SearchSourceController {
     
     private static String getFieldName(String keyWord) {
         Map<String, Schema.SObjectField> fieldMap = getFieldMap('Profile');
-        Map<String,String> fieldToAPIName = new Map<String,String>();
+        String foundFieldName = null;
         
         for(String fieldName : fieldMap.keySet()) {
-            fieldToAPIName.put(fieldMap.get(fieldName).getDescribe().getLabel(), fieldMap.get(fieldName).getDescribe().getName());
+            if(keyWord.equalsIgnoreCase(fieldMap.get(fieldName).getDescribe().getLabel())) {
+                foundFieldName = fieldMap.get(fieldName).getDescribe().getName();
+                break;
+            }
         }
         
-        return fieldToAPIName.get(keyWord);
+        return foundFieldName;
     }
     
     private static Map<String, Schema.SObjectField> getFieldMap(String objectType) {
