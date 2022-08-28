@@ -42,18 +42,26 @@ public class SearchSourceController {
         String searchKey = getFieldName(keyWord);
         List<Profile> profiles = [SELECT Id, Name FROM Profile];
         List<Profile> foundProfiles = new List<Profile>();
-        for(Profile prof : profiles) {
-            try {
-            	String dbQuery = 'SELECT '+searchKey+' FROM Profile WHERE Name = \''+prof.Name+'\'';
-                sObject one = Database.query(dbQuery);
-                Map<String, Object> fields = one.getPopulatedFieldsAsMap();
-                if(fields.get(searchKey) == true) {
-                    foundProfiles.add(prof);
-                }
-            } catch (Exception ex) {
-                System.debug('Error: '+ex.getMessage());
-                continue;
+        Iterator<Profile> iter = profiles.iterator();
+        String dbQuery = 'SELECT '+searchKey+', Name FROM Profile WHERE ';
+        while(iter.hasNext()) {
+            Profile prof = iter.next();
+			dbQuery += 'Name = \''+prof.Name+'\'';
+            if(iter.hasNext()) {
+                dbQuery += ' OR ';
             }
+        }
+        
+        try {
+            List<sObject> profilesWithPermission = Database.query(dbQuery);
+            for(sObject prof : profilesWithPermission) {
+                Map<String, Object> fields = prof.getPopulatedFieldsAsMap();
+                if(fields.get(searchKey) == true) {
+                    foundProfiles.add((Profile) prof);
+                }   
+            }
+        } catch (Exception ex) {
+            System.debug('Error: '+ex.getMessage());
         }
         
         return foundProfiles;
