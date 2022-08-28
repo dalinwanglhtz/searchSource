@@ -39,10 +39,10 @@ public class SearchSourceController {
     
     @AuraEnabled
     public static List<Profile> getProfiles(String keyWord) {
-        String searchKey = getFieldName(keyWord);
+        String searchKey = getFieldName(keyWord, 'Profile');
         List<Profile> profiles = [SELECT Id, Name FROM Profile];
         List<Profile> foundProfiles = new List<Profile>();
-        String dbQuery = buildDbQuery(profiles, searchKey);
+        String dbQuery = buildDbQuery(profiles, searchKey, 'Name');
         
         try {
             List<Profile> profilesWithPermission = Database.query(dbQuery);
@@ -59,8 +59,30 @@ public class SearchSourceController {
         return foundProfiles;
     }
     
-    private static String getFieldName(String keyWord) {
-        Map<String, Schema.SObjectField> fieldMap = getFieldMap('Profile');
+    @AuraEnabled
+    public static List<PermissionSet> getPermissionSets(String keyWord) {
+        String searchKey = getFieldName(keyWord, 'PermissionSet');
+        List<PermissionSet> permissionSets = [SELECT Id, Name FROM PermissionSet];
+        List<PermissionSet> foundPermissionSets = new List<PermissionSet>();
+        String dbQuery = buildDbQuery(permissionSets, searchKey, 'Label');
+        
+        try {
+            List<PermissionSet> permissionSetsWithPermission = Database.query(dbQuery);
+            for(PermissionSet ps : permissionSetsWithPermission) {
+                Map<String, Object> fields = ps.getPopulatedFieldsAsMap();
+                if(fields.get(searchKey) == true) {
+                    foundPermissionSets.add(ps);
+                }
+            }
+        } catch (Exception ex) {
+            System.debug('Error: '+ex.getMessage());
+        }
+        
+        return foundPermissionSets;
+    }
+    
+    private static String getFieldName(String keyWord, String objType) {
+        Map<String, Schema.SObjectField> fieldMap = getFieldMap(objType);
         String foundFieldName = null;
         
         for(String fieldName : fieldMap.keySet()) {
@@ -78,9 +100,9 @@ public class SearchSourceController {
     	return sObjSchema.getDescribe().fields.getMap();
     }
     
-    private static String buildDbQuery(List<sObject> objs, String searchKey) {
+    private static String buildDbQuery(List<sObject> objs, String searchKey, String displayFieldName) {
         Iterator<sObject> iter = objs.iterator();
-        String dbQuery = 'SELECT '+searchKey+', Name FROM '+objs.getSObjectType()+' WHERE ';
+        String dbQuery = 'SELECT '+searchKey+', '+displayFieldName+' FROM '+objs.getSObjectType()+' WHERE ';
         while(iter.hasNext()) {
 			dbQuery += 'Name = \''+iter.next().get('Name')+'\'';
             if(iter.hasNext()) {

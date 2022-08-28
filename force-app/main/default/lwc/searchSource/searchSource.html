@@ -56,5 +56,13 @@
                 columns={profileColumns}>
             </lightning-datatable>
         </div>
+        <div class="slds-m-left_small">
+            <lightning-datatable
+                hide-checkbox-column
+                key-field="id"
+                data={permissionSetData}
+                columns={permissionSetColumns}>
+            </lightning-datatable>
+        </div>
     </lightning-card>
 </template>

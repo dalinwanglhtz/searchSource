@@ -3,10 +3,11 @@ import { NavigationMixin } from 'lightning/navigation';
 import getApexClass from '@salesforce/apex/SearchSourceController.getApexClass';
 import getProfiles from '@salesforce/apex/SearchSourceController.getProfiles';
 import getAutoSuggest from '@salesforce/apex/SearchSourceController.getAutoSuggest';
+import getPermissionSets from '@salesforce/apex/SearchSourceController.getPermissionSets';
 
 const actions = [
     { label: 'Show Details', name: 'showDetails'}
-]
+];
 
 const columns = [
     { label: 'Class Name', fieldName: 'Name' },
@@ -19,13 +20,19 @@ const columns = [
 
 const profileColumns = [
     { label: 'Profile Name', fieldName: 'Name'}
-]
+];
+
+const permissionSetColumns = [
+    { label: 'Permission Set Name', fieldName: 'Label'}
+];
 
 export default class SearchSource extends NavigationMixin(LightningElement) {
     data;
     columns = columns;
     profileData;
     profileColumns = profileColumns;
+    permissionSetData;
+    permissionSetColumns = permissionSetColumns;
     autoSuggestList;
     err;
 
@@ -35,6 +42,7 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
             console.log('Word cleared');
             this.data = null;
             this.profileData = null;
+            this.permissionSetData = null;
             this.autoSuggestList = null;
             return;
         }
@@ -71,6 +79,14 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
                 console.log('Error: ', error);
                 this.err = error;
             });
+        getPermissionSets({keyWord: searchInput.value})
+            .then(result => {
+                console.log('Permission Sets: ', result);
+                this.permissionSetData = result;
+            })
+            .catch(error => {
+                this.err = error;
+            });
     }
 
     clearAutoSuggest() {
@@ -90,6 +106,7 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
     handleClear() {
         this.data = null;
         this.profileData = null;
+        this.permissionSetData = null;
         this.autoSuggestList = null;
     }
 
