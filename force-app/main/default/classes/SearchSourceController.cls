@@ -45,11 +45,11 @@ public class SearchSourceController {
         String dbQuery = buildDbQuery(profiles, searchKey);
         
         try {
-            List<sObject> profilesWithPermission = Database.query(dbQuery);
-            for(sObject prof : profilesWithPermission) {
+            List<Profile> profilesWithPermission = Database.query(dbQuery);
+            for(Profile prof : profilesWithPermission) {
                 Map<String, Object> fields = prof.getPopulatedFieldsAsMap();
                 if(fields.get(searchKey) == true) {
-                    foundProfiles.add((Profile) prof);
+                    foundProfiles.add(prof);
                 }   
             }
         } catch (Exception ex) {
