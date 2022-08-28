@@ -42,15 +42,7 @@ public class SearchSourceController {
         String searchKey = getFieldName(keyWord);
         List<Profile> profiles = [SELECT Id, Name FROM Profile];
         List<Profile> foundProfiles = new List<Profile>();
-        Iterator<Profile> iter = profiles.iterator();
-        String dbQuery = 'SELECT '+searchKey+', Name FROM Profile WHERE ';
-        while(iter.hasNext()) {
-            Profile prof = iter.next();
-			dbQuery += 'Name = \''+prof.Name+'\'';
-            if(iter.hasNext()) {
-                dbQuery += ' OR ';
-            }
-        }
+        String dbQuery = buildDbQuery(profiles, searchKey);
         
         try {
             List<sObject> profilesWithPermission = Database.query(dbQuery);
@@ -84,5 +76,18 @@ public class SearchSourceController {
     private static Map<String, Schema.SObjectField> getFieldMap(String objectType) {
         Schema.SObjectType sObjSchema = Schema.getGlobalDescribe().get(objectType);
     	return sObjSchema.getDescribe().fields.getMap();
+    }
+    
+    private static String buildDbQuery(List<sObject> objs, String searchKey) {
+        Iterator<sObject> iter = objs.iterator();
+        String dbQuery = 'SELECT '+searchKey+', Name FROM '+objs.getSObjectType()+' WHERE ';
+        while(iter.hasNext()) {
+			dbQuery += 'Name = \''+iter.next().get('Name')+'\'';
+            if(iter.hasNext()) {
+                dbQuery += ' OR ';
+            }
+        }
+        
+        return dbQuery;
     }
 }
