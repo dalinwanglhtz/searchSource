@@ -41,20 +41,9 @@ public class SearchSourceController {
     public static List<Profile> getProfiles(String keyWord) {
         String searchKey = getFieldName(keyWord, 'Profile');
         List<Profile> profiles = [SELECT Id, Name FROM Profile];
-        List<Profile> foundProfiles = new List<Profile>();
         String dbQuery = buildDbQuery(profiles, searchKey, 'Name');
         
-        try {
-            List<Profile> profilesWithPermission = Database.query(dbQuery);
-            for(Profile prof : profilesWithPermission) {
-                Map<String, Object> fields = prof.getPopulatedFieldsAsMap();
-                if(fields.get(searchKey) == true) {
-                    foundProfiles.add(prof);
-                }   
-            }
-        } catch (Exception ex) {
-            System.debug('Error: '+ex.getMessage());
-        }
+        List<Profile> foundProfiles = findRecords(searchKey, dbQuery);
         
         return foundProfiles;
     }
@@ -63,20 +52,9 @@ public class SearchSourceController {
     public static List<PermissionSet> getPermissionSets(String keyWord) {
         String searchKey = getFieldName(keyWord, 'PermissionSet');
         List<PermissionSet> permissionSets = [SELECT Id, Name FROM PermissionSet];
-        List<PermissionSet> foundPermissionSets = new List<PermissionSet>();
         String dbQuery = buildDbQuery(permissionSets, searchKey, 'Label');
         
-        try {
-            List<PermissionSet> permissionSetsWithPermission = Database.query(dbQuery);
-            for(PermissionSet ps : permissionSetsWithPermission) {
-                Map<String, Object> fields = ps.getPopulatedFieldsAsMap();
-                if(fields.get(searchKey) == true) {
-                    foundPermissionSets.add(ps);
-                }
-            }
-        } catch (Exception ex) {
-            System.debug('Error: '+ex.getMessage());
-        }
+        List<PermissionSet> foundPermissionSets = findRecords(searchKey, dbQuery);
         
         return foundPermissionSets;
     }
@@ -111,5 +89,22 @@ public class SearchSourceController {
         }
         
         return dbQuery;
+    }
+    
+    private static List<SObject> findRecords(String searchKey, String dbQuery) {
+        List<SObject> records = new List<SObject>();
+        try {
+            List<SObject> dbResults = Database.query(dbQuery);
+            for(SObject obj : dbResults) {
+                Map<String, Object> fields = obj.getPopulatedFieldsAsMap();
+                if(fields.get(searchKey) == true) {
+                    records.add(obj);
+                }   
+            }
+        } catch (Exception ex) {
+            System.debug('Error: '+ex.getMessage());
+        }
+        
+        return records;
     }
 }
