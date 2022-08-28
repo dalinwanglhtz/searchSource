@@ -53,7 +53,8 @@
                 hide-checkbox-column
                 key-field="id"
                 data={profileData}
-                columns={profileColumns}>
+                columns={profileColumns}
+                onrowaction={handleRowAction}>
             </lightning-datatable>
         </div>
         <div class="slds-m-left_small">
@@ -61,7 +62,8 @@
                 hide-checkbox-column
                 key-field="id"
                 data={permissionSetData}
-                columns={permissionSetColumns}>
+                columns={permissionSetColumns}
+                onrowaction={handleRowAction}>
             </lightning-datatable>
         </div>
     </lightning-card>

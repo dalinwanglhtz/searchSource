@@ -11,7 +11,8 @@ const actions = [
 
 const columns = [
     { label: 'Class Name', fieldName: 'Name' },
-    { type: 'action', 
+    { 
+        type: 'action', 
         typeAttributes: {
             rowActions: actions
         }
@@ -19,11 +20,23 @@ const columns = [
 ];
 
 const profileColumns = [
-    { label: 'Profile Name', fieldName: 'Name'}
+    { label: 'Profile Name', fieldName: 'Name'},
+    { 
+        type: 'action',
+        typeAttributes: {
+            rowActions: actions
+        }
+    }
 ];
 
 const permissionSetColumns = [
-    { label: 'Permission Set Name', fieldName: 'Label'}
+    { label: 'Permission Set Name', fieldName: 'Label'},
+    {
+        type: 'action',
+        typeAttributes: {
+            rowActions: actions
+        }
+    }
 ];
 
 export default class SearchSource extends NavigationMixin(LightningElement) {
@@ -115,7 +128,6 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
             type: 'standard__recordPage',
             attributes: {
                 recordId: rowId,
-                objectApiName: 'ApexClass',
                 actionName: 'view'
             }
         }).then(url => {
