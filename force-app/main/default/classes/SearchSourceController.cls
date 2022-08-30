@@ -24,17 +24,19 @@ public class SearchSourceController {
     
     @AuraEnabled
     public static List<String> getAutoSuggest(String searchKey) {
-        Map<String, Schema.SObjectField> fieldMap = getFieldMap('Profile');
-		List<String> autoSuggests = new List<String>();
-        
-        for(String fieldName : fieldMap.keySet()) {
-            String label = fieldMap.get(fieldName).getDescribe().getLabel();
-            if(label.contains(searchKey)) {
-                autoSuggests.add(label);
-            }
+		Set<String> autoSuggests = new Set<String>();
+        List<String> items = new List<String>{'Profile', 'PermissionSet'};
+        for(String str: items) {
+        	Map<String, Schema.SObjectField> fieldMap = getFieldMap(str);
+            for(String fieldName : fieldMap.keySet()) {
+                String label = fieldMap.get(fieldName).getDescribe().getLabel();
+                if(label.contains(searchKey)) {
+                    autoSuggests.add(label);
+                }
+            }            
         }
 
-        return autoSuggests;
+        return new List<String>(autoSuggests);
     }
     
     @AuraEnabled
@@ -87,6 +89,7 @@ public class SearchSourceController {
                 dbQuery += ' OR ';
             }
         }
+        dbQuery += ' ORDER BY '+displayFieldName+' DESC';
         
         return dbQuery;
     }
