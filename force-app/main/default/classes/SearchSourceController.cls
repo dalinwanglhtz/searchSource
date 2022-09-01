@@ -53,7 +53,14 @@ public class SearchSourceController {
     @AuraEnabled
     public static List<PermissionSet> getPermissionSets(String keyWord) {
         String searchKey = getFieldName(keyWord, 'PermissionSet');
-        List<PermissionSet> permissionSets = [SELECT Id, Name FROM PermissionSet];
+        
+        // Exclude permission sets owned by profiles
+        // https://help.salesforce.com/s/articleView?id=000339288&type=1
+        List<PermissionSet> permissionSets = [
+            SELECT Id, Name, Label 
+            FROM PermissionSet 
+			WHERE IsOwnedByProfile = false];
+        
         String dbQuery = buildDbQuery(permissionSets, searchKey, 'Label');
         
         List<PermissionSet> foundPermissionSets = findRecords(searchKey, dbQuery);
@@ -82,14 +89,14 @@ public class SearchSourceController {
     
     private static String buildDbQuery(List<sObject> objs, String searchKey, String displayFieldName) {
         Iterator<sObject> iter = objs.iterator();
-        String dbQuery = 'SELECT '+searchKey+', '+displayFieldName+' FROM '+objs.getSObjectType()+' WHERE ';
+        String dbQuery = 'SELECT '+searchKey+', '+displayFieldName+' FROM '+objs.getSObjectType()+' WHERE Name IN (';
         while(iter.hasNext()) {
-			dbQuery += 'Name = \''+iter.next().get('Name')+'\'';
+			dbQuery += '\''+iter.next().get('Name')+'\'';
             if(iter.hasNext()) {
-                dbQuery += ' OR ';
+                dbQuery += ', ';
             }
         }
-        dbQuery += ' ORDER BY '+displayFieldName+' DESC';
+        dbQuery += ') ORDER BY '+displayFieldName+' DESC';
         
         return dbQuery;
     }
@@ -105,7 +112,7 @@ public class SearchSourceController {
                 }   
             }
         } catch (Exception ex) {
-            System.debug('Error: '+ex.getMessage());
+            throw new AuraHandledException('Error getting results, detail: '+ex.getMessage());
         }
         
         return records;
