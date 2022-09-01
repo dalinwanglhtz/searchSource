@@ -1,24 +1,21 @@
 public class SearchSourceController {
+    
+    public static SearchSourceDAOService searchSourceDAOService {
+        get {
+            if(searchSourceDAOService == null) {
+                searchSourceDAOService = new SearchSourceDAOServiceImpl();
+            }
+            return searchSourceDAOService;
+        }
+        set {
+            searchSourceDAOService = value;
+        }
+    }
+    
 	@AuraEnabled
     public static List<ApexClass> getApexClass(String searchKey) {
         String queryString = '%'+searchKey+'%';
-        List<ApexClass> aClasses = [
-            SELECT ApiVersion, 
-            	Body, 
-            	BodyCrc, 
-            	CreatedById, 
-            	CreatedDate, 
-            	Id, 
-            	IsValid, 
-            	LastModifiedById, 
-            	LastModifiedDate, 
-            	LengthWithoutComments, 
-            	Name, 
-            	NamespacePrefix, 
-            	Status, SystemModstamp 
-            	FROM ApexClass
-            	WHERE Name LIKE :queryString
-        ];
+        List<ApexClass> aClasses = searchSourceDAOService.getApexClasses(queryString);
         return aClasses;
     }
     
@@ -42,7 +39,7 @@ public class SearchSourceController {
     @AuraEnabled
     public static List<Profile> getProfiles(String keyWord) {
         String searchKey = getFieldName(keyWord, 'Profile');
-        List<Profile> profiles = [SELECT Id, Name FROM Profile];
+        List<Profile> profiles = searchSourceDAOService.getAllProfiles();
         String dbQuery = buildDbQuery(profiles, searchKey, 'Name');
         
         List<Profile> foundProfiles = findRecords(searchKey, dbQuery);
@@ -53,14 +50,7 @@ public class SearchSourceController {
     @AuraEnabled
     public static List<PermissionSet> getPermissionSets(String keyWord) {
         String searchKey = getFieldName(keyWord, 'PermissionSet');
-        
-        // Exclude permission sets owned by profiles
-        // https://help.salesforce.com/s/articleView?id=000339288&type=1
-        List<PermissionSet> permissionSets = [
-            SELECT Id, Name, Label 
-            FROM PermissionSet 
-			WHERE IsOwnedByProfile = false];
-        
+        List<PermissionSet> permissionSets = searchSourceDAOService.getAllPermissionSets();
         String dbQuery = buildDbQuery(permissionSets, searchKey, 'Label');
         
         List<PermissionSet> foundPermissionSets = findRecords(searchKey, dbQuery);
