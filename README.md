@@ -1,3 +1,13 @@
+# How to install
+1. Download the source
+2. Deploy both LWC and Apex Classes to your org
+3. From App Builder, add the LWC to any of the app, home or record pages
+
+# How to use Search Source
+1. You can search for Apex Classes by their name
+2. You can search which profiles or permission sets has a certain permission
+
+
 # Salesforce DX Project: Next Steps
 
 Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
