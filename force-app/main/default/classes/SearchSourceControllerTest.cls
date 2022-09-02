@@ -32,6 +32,17 @@ public class SearchSourceControllerTest {
         System.assertNotEquals(null, profiles, 'Should not return null.');
     }
     
+    @IsTest
+    static void testGetPermissionSets() {
+        SearchSourceController.searchSourceDAOService = new MockSearchSourceDAOServiceImpl();
+        
+        Test.startTest();
+        List<PermissionSet> permSets = SearchSourceController.getPermissionSets('Testing');
+        Test.stopTest();
+        
+        System.assertNotEquals(null, permSets, 'Should not return null.');
+    }
+    
     public class MockSearchSourceDAOServiceImpl implements SearchSourceDAOService {
         public List<ApexClass> getApexClasses(String searchString) {
             List<ApexClass> apexClasses = new List<ApexClass>();
