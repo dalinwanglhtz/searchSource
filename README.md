@@ -5,7 +5,8 @@
 
 # How to use Search Source
 1. You can search for Apex Classes by their name
-2. You can search which profiles or permission sets has a certain permission
+2. You can search which profiles or permission sets possessing a certain permission
+3. Click on row action will let you navigate to the class, profile or permission
 
 
 # Salesforce DX Project: Next Steps
