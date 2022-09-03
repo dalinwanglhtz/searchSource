@@ -78,23 +78,19 @@ export default class SearchSource extends NavigationMixin(LightningElement) {
     }
 
     setSelected(event) {
-        console.log('Selected: ', event.currentTarget.dataset.name);
         const searchInput = this.template.querySelector('lightning-input');
         searchInput.value = event.currentTarget.dataset.name;
         this.autoSuggestList = null;
 
         getProfiles({keyWord: searchInput.value})
             .then(result => {
-                console.log('Profiles: ', result);
                 this.profileData = result;
             })
             .catch(error => {
-                console.log('Error: ', error);
                 this.err = error;
             });
         getPermissionSets({keyWord: searchInput.value})
             .then(result => {
-                console.log('Permission Sets: ', result);
                 this.permissionSetData = result;
             })
             .catch(error => {
